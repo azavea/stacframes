@@ -4,6 +4,7 @@ import pandas as pd
 import pystac
 from shapely.geometry import mapping, shape
 
+from .parents import DEFAULT_PARENTS_COLUMN
 from .utils import build_recursive, update_collection_extents
 
 
@@ -90,29 +91,29 @@ def series_from(item):
     return pd.Series(item_dict, name=item_id)
 
 
-def df_to(catalog, dataframe, parents=None):
+def df_to(catalog, dataframe, parents_col=DEFAULT_PARENTS_COLUMN):
     """Add all items in dataframe to catalog
+
+
 
     Args:
         dataframe (pandas.DataFrame): A DataFrame of rows structured as described
             by stacframes.item_from.
         catalog (pystac.Catalog): The Catalog to add the items in dataframe to.
-        parents (list): An ordered list of column names on the passed dataframe.
-            This method will retrieve the value of the column for each item
-            in order and add the Item to Collections named by the value in the Item
-            column. See tests/test_stacframes.py for examples.
+        parents_col (str): A column in dataframe that contains a list of
+            collection ids to attach the item to. The collections are
+            created in the pystac catalog tree if they do not exist.
+            `stacframes.parents` contains a few helper methods for generating the
+            parents column, and examples/aviris/main.py presents an example.
 
     """
 
     def handle_row(series):
-        props = series.get("properties", {})
-        parent_values = [props[v] for v in parents]
-        child_catalog = build_recursive(catalog, parent_values, "collection")
+        parents_list = series.get(parents_col, [])
+        child_catalog = build_recursive(catalog, parents_list, "collection")
         item = item_from(series)
         child_catalog.add_item(item)
 
-    if not parents:
-        parents = []
     dataframe.apply(handle_row, axis=1)
 
     update_collection_extents(catalog)

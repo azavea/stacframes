@@ -75,40 +75,17 @@ class TestStacFramesManager(unittest.TestCase):
             "datetime": [dt, dt, dt],
             "geometry": [geometry, geometry, geometry],
             "bbox": [bbox, bbox, bbox],
-            "properties": [{"catalog": "one"}, {"catalog": "one"}, {"catalog": "two"}],
+            "properties": [{}, {}, {}],
+            "parents": [[], ["foo"], ["foo", "bar"]],
         }
         df = gpd.GeoDataFrame(d, crs="EPSG:4326")
         catalog = pystac.Catalog("test", "test")
-        stacframes.df_to(catalog, df, parents=["catalog"])
-        self.assertEqual(len(list(catalog.get_children())), 2)
-        catalog_one = catalog.get_child("test-one")
-        self.assertEqual(len(list(catalog_one.get_items())), 2)
-        self.assertEqual(catalog_one.extent.spatial.bboxes, [bbox])
-        self.assertEqual(catalog_one.extent.temporal.intervals, [[dt, dt]])
-        catalog_two = catalog.get_child("test-two")
-        self.assertEqual(len(list(catalog_two.get_items())), 1)
-        self.assertEqual(catalog_two.get_item("c").id, "c")
-
-    def test_nested_add_int_property(self):
-        """Ensure we can use parents arg on properties that contain ints"""
-        dt = datetime(2020, 1, 1, tzinfo=timezone.utc)
-        geometry = box(0.0, 0.0, 1.0, 1.0)
-        bbox = [*geometry.bounds]
-        d = {
-            "id": ["a", "b", "c"],
-            "datetime": [dt, dt, dt],
-            "geometry": [geometry, geometry, geometry],
-            "bbox": [bbox, bbox, bbox],
-            "properties": [{"year": 2000}, {"year": 2000}, {"year": 2010}],
-        }
-        df = gpd.GeoDataFrame(d, crs="EPSG:4326")
-        catalog = pystac.Catalog("test", "test")
-        stacframes.df_to(catalog, df, parents=["year"])
-        self.assertEqual(len(list(catalog.get_children())), 2)
-        catalog_one = catalog.get_child("test-2000")
-        self.assertEqual(len(list(catalog_one.get_items())), 2)
-        self.assertEqual(catalog_one.extent.spatial.bboxes, [bbox])
-        self.assertEqual(catalog_one.extent.temporal.intervals, [[dt, dt]])
-        catalog_two = catalog.get_child("test-2010")
-        self.assertEqual(len(list(catalog_two.get_items())), 1)
-        self.assertEqual(catalog_two.get_item("c").id, "c")
+        stacframes.df_to(catalog, df)
+        self.assertEqual(len(list(catalog.get_children())), 1)
+        catalog_foo = catalog.get_child("foo")
+        self.assertEqual(len(list(catalog_foo.get_items())), 1)
+        self.assertEqual(catalog_foo.extent.spatial.bboxes, [bbox])
+        self.assertEqual(catalog_foo.extent.temporal.intervals, [[dt, dt]])
+        catalog_bar = catalog_foo.get_child("bar")
+        self.assertEqual(len(list(catalog_bar.get_items())), 1)
+        self.assertEqual(catalog_bar.get_item("c").id, "c")

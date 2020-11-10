@@ -23,15 +23,12 @@ def update_collection_extents(catalog):
 def build_recursive(catalog, children, catalog_type="collection"):
     """Append child catalogs to catalog with the ids in children
 
-    Catalog ids in children will be concatenated to the parent catalog
-    id to ensure uniqueness, separated by `-`.
-
     An example:
     ```
     catalog = pystac.Catalog("test, "test")
     leaf_catalog = build_recursive(catalog, ["foo", "bar"], "collection")
     leaf_catalog.id
-        <"test-foo-bar">
+        <"bar">
     isinstance(leaf_catalog, pystac.Collection)
         <True>
     ```
@@ -39,8 +36,8 @@ def build_recursive(catalog, children, catalog_type="collection"):
     Yields a catalog tree that looks like:
     ```
     Catalog("test")
-    |- Collection("test-foo")
-        |- Collection("test-foo-bar")
+    |- Collection("foo")
+        |- Collection("bar")
     ```
 
     Args:
@@ -60,7 +57,7 @@ def build_recursive(catalog, children, catalog_type="collection"):
     if not children:
         return catalog
     else:
-        child_id = "-".join([catalog.id, str(children.pop(0))])
+        child_id = children.pop(0)
         child_catalog = catalog.get_child(child_id)
         if child_catalog is None:
             if catalog_type == "catalog":
