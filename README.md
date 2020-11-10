@@ -19,7 +19,7 @@ import pystac
 import stacframes
 
 catalog = pystac.Catalog.from_file("path/to/catalog.json")
-df = stacframes.to_df(catalog)
+df = stacframes.df_from(catalog)
 ```
 
 To write a DataFrame to a STAC Catalog:
@@ -49,9 +49,8 @@ def map_row_to_item(series):
       "datetime": dt
     }
 
-df = df.apply(map_row_to_item)
 catalog = pystac.Catalog("data", "My Data")
-stacframes.add(df, catalog)
+stacframes.df_to(catalog, df.apply(map_row_to_item))
 catalog.normalize_and_save("./path/to/catalog.json")
 ```
 

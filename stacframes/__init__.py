@@ -90,13 +90,13 @@ def series_from(item):
     return pd.Series(item_dict, name=item_id)
 
 
-def add(pd_dataframe, catalog, parents=None):
-    """Add all items in pd_dataframe to catalog
+def df_to(catalog, dataframe, parents=None):
+    """Add all items in dataframe to catalog
 
     Args:
-        pd_dataframe (pandas.DataFrame): A DataFrame of rows structured as described
+        dataframe (pandas.DataFrame): A DataFrame of rows structured as described
             by stacframes.item_from.
-        catalog (pystac.Catalog): The Catalog to add the items in pd_dataframe to.
+        catalog (pystac.Catalog): The Catalog to add the items in dataframe to.
         parents (list): An ordered list of column names on the passed dataframe.
             This method will retrieve the value of the column for each item
             in order and add the Item to Collections named by the value in the Item
@@ -113,7 +113,7 @@ def add(pd_dataframe, catalog, parents=None):
 
     if not parents:
         parents = []
-    pd_dataframe.apply(handle_row, axis=1)
+    dataframe.apply(handle_row, axis=1)
 
     update_collection_extents(catalog)
 

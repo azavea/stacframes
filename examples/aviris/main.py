@@ -156,7 +156,7 @@ def main():
 
     df = df.apply(map_series_to_item, axis=1)
     catalog = pystac.Catalog("aviris", AVIRIS_DESCRIPTION)
-    stacframes.add(df, catalog, parents=["Year", "Flight"])
+    stacframes.df_to(catalog, df, parents=["Year", "Flight"])
 
     # Normalize before validation to set all the required object links
     catalog.normalize_hrefs("./catalog")

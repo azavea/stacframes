@@ -61,7 +61,7 @@ class TestStacFramesManager(unittest.TestCase):
         }
         df = gpd.GeoDataFrame(d, crs="EPSG:4326")
         catalog = pystac.Catalog("test", "test")
-        stacframes.add(df, catalog)
+        stacframes.df_to(catalog, df)
         self.assertEqual(len(list(catalog.get_children())), 0)
         self.assertEqual(len(list(catalog.get_items())), 3)
 
@@ -79,7 +79,7 @@ class TestStacFramesManager(unittest.TestCase):
         }
         df = gpd.GeoDataFrame(d, crs="EPSG:4326")
         catalog = pystac.Catalog("test", "test")
-        stacframes.add(df, catalog, parents=["catalog"])
+        stacframes.df_to(catalog, df, parents=["catalog"])
         self.assertEqual(len(list(catalog.get_children())), 2)
         catalog_one = catalog.get_child("test-one")
         self.assertEqual(len(list(catalog_one.get_items())), 2)
@@ -103,7 +103,7 @@ class TestStacFramesManager(unittest.TestCase):
         }
         df = gpd.GeoDataFrame(d, crs="EPSG:4326")
         catalog = pystac.Catalog("test", "test")
-        stacframes.add(df, catalog, parents=["year"])
+        stacframes.df_to(catalog, df, parents=["year"])
         self.assertEqual(len(list(catalog.get_children())), 2)
         catalog_one = catalog.get_child("test-2000")
         self.assertEqual(len(list(catalog_one.get_items())), 2)
