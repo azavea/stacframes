@@ -149,8 +149,8 @@ def main():
     # for the link_log column, and the later row has the correct url.
     df = df.drop_duplicates(subset="Flight Scene", keep="last")
 
-    # Ensure all empty values in this column are strings so we don't crash our kml parser
-    df.kml_poly = df.kml_poly.fillna("")
+    # Ensure all empty values in columns aren't NaN so we write valid STAC
+    df = df.fillna("")
 
     assert len(df) == 3741
 
