@@ -7,7 +7,7 @@ A Python library for working with STAC Catalogs via Pandas DataFrames
 Install via pip:
 
 ```shell
-pip install stacframes
+pip install git+https://github.com/azavea/stacframes.git@dd7959d1a9fee7227624aa185f797402209b0ad0
 ```
 
 ## Usage
